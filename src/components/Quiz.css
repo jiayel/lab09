@@ -48,6 +48,10 @@ Hint: You can use the className attribute for highlighting*/
     border: 1px solid #ccc;
     border-radius: 5px;
   }
+
+  li.selected {
+    background-color: aqua;
+  }
   
   /* Submit button styles */
   button {
