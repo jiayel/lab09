@@ -3,14 +3,19 @@ import './Quiz.css'
 import QuizCore from "../core/QuizCore";
 
 interface QuizState {
+    quizCore: QuizCore
   selectedAnswer: string | null
+    showSubmitButton: boolean
+    quizComplete: boolean
 }
 
 const Quiz: React.FC = () => {
-    const quizCore: QuizCore = new QuizCore();
 
   const [state, setState] = useState<QuizState>({
+      quizCore: new QuizCore(),
     selectedAnswer: null,  // Initialize the selected answer.
+      showSubmitButton: false,
+      quizComplete: false
   });
 
   const handleOptionSelect = (option: string): void => {
@@ -20,16 +25,33 @@ const Quiz: React.FC = () => {
 
   const handleButtonClick = (): void => {
     // Task3: Implement the logic for button click, such as moving to the next question.
-  } 
+      if (selectedAnswer && quizCore.hasNextQuestion()) {
+          quizCore.answerQuestion(selectedAnswer)
+          quizCore.nextQuestion()
+          setState(prevState => ({...prevState, selectedAnswer: null, showSubmitButton: false}))
+      }
+      else if (selectedAnswer && !quizCore.hasNextQuestion()){
+          quizCore.answerQuestion(selectedAnswer)
+          setState(prevState => ({...prevState, showSubmitButton: true, quizComplete:true}))
+      }
+  }
+  const handleSubmitButton = (): void => {
+      setState((prevState) => ({
+          ...prevState,
+          quizComplete: true,
+      }))
+      //alert("Quiz completed\n")
 
-  const { selectedAnswer } = state;
+  }
+
+  const { quizCore, selectedAnswer, showSubmitButton, quizComplete } = state;
   const currentQuestion = quizCore.getCurrentQuestion();
 
-  if (!currentQuestion) {
+  if (quizComplete) {
     return (
       <div>
         <h2>Quiz Completed</h2>
-        <p>Final Score: {quizCore.getScore()} out of {currentQuestion.length}</p>
+        <p>Final Score: {quizCore.getScore()} out of {quizCore.getTotal()}</p>
       </div>
     );
   }
@@ -55,7 +77,11 @@ const Quiz: React.FC = () => {
       <h3>Selected Answer:</h3>
       <p>{selectedAnswer ?? 'No answer selected'}</p>
 
-      <button onClick={handleButtonClick}>Next Question</button>
+        {showSubmitButton ? (
+            <button onClick={handleSubmitButton}>Submit Quiz</button>
+        ) : (
+            <button onClick={handleButtonClick}>Next Question</button>
+        )}
     </div>
   );
 };

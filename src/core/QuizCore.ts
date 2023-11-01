@@ -73,6 +73,14 @@ class QuizCore {
     return this.score;
   }
 
+  /**
+   * Get total number of questions
+   * @return The numbr of total questions.
+   */
+  public getTotal(): number {
+    return this.questions.length;
+  }
+
 }
 
 export default QuizCore;
